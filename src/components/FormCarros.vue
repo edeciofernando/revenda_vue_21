@@ -12,7 +12,11 @@
     <h4 v-if="erros.length" class="text-danger">
       <b>Por favor, corrija o(s) seguinte(s) erro(s):</b>
       <ul>
-        <li v-for="(erro, index) in erros" class="text-danger small" :key="index">
+        <li
+          v-for="(erro, index) in erros"
+          class="text-danger small"
+          :key="index"
+        >
           {{ erro }}
         </li>
       </ul>
@@ -101,66 +105,68 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   data() {
     return {
       carro: {
-        id: null,  
+        id: null,
         modelo: null,
         marca_id: null,
         preco: null,
         ano: null,
-        foto: null
+        foto: null,
       },
       marcas: null,
-      erros: []
-    }
+      erros: [],
+    };
   },
 
   methods: {
-
     verificaForm() {
       // limpa vetor de erros
       this.erros = [];
-      if (this.carro.ano >= 1970 && this.carro.preco >= 5000) {
+      if (Number(this.carro.ano) >= 1970 && Number(this.carro.preco) >= 5000) {
         return true;
       }
 
-      if (!this.carro.ano < 1970) {
+      if (Number(this.carro.ano) < 1970) {
         this.erros.push("Revise o ano do veículo.");
       }
-      if (!this.carro.preco < 5000) {
+      if (Number(this.carro.preco) < 5000) {
         this.erros.push("Valor incorreto. Por favor, verifique.");
       }
       return false;
     },
 
     altera() {
-          axios.put(this.$urlAPI+"/carros/"+this.carro.id, this.carro, 
-             {
-               headers: {
-                 Authorization: `Bearer ${localStorage.getItem("token")}`
-               }
-             })
-             .then(response => alert(`Ok! Veículo Alterado Corretamente ${response.data}`))
+      axios
+        .put(this.$urlAPI + "/carros/" + this.carro.id, this.carro, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) =>
+          alert(`Ok! Veículo Alterado Corretamente ${response.data}`)
+        );
     },
 
     inclui() {
-          axios.post(this.$urlAPI+"/carros", this.carro, 
-             {
-               headers: {
-                 Authorization: `Bearer ${localStorage.getItem("token")}`
-               }
-             })
-             .then(response => alert(`Ok! Veículo Cadastro com código ${response.data.id}`))
-          this.carro = {}         // limpando o objeto carro, limpa os campos do form
-          this.$refs.modelo.focus()     
+      axios
+        .post(this.$urlAPI + "/carros", this.carro, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) =>
+          alert(`Ok! Veículo Cadastro com código ${response.data.id}`)
+        );
+      this.carro = {}; // limpando o objeto carro, limpa os campos do form
+      this.$refs.modelo.focus();
     },
 
     salvar() {
-      
       // if (!localStorage.getItem("token")) {
       //   alert("Erro... Faça Login para Realizar a Inclusão / Alteração")
       //   return
@@ -171,25 +177,26 @@ export default {
       }
 
       if (this.carro.id) {
-        this.altera()
+        this.altera();
       } else {
-        this.inclui()
-      }  
+        this.inclui();
+      }
     },
     goBack() {
-      window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/')
-    }
-  },      
+      window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
+    },
+  },
   mounted() {
-    axios.get(this.$urlAPI+"/marcas")
-         .then(response => {this.marcas = response.data})    
+    axios.get(this.$urlAPI + "/marcas").then((response) => {
+      this.marcas = response.data;
+    });
 
     if (this.$route.query.altera) {
-      console.log(this.$route.query.altera)
-      this.carro = this.$route.query.altera
+      //      console.log(this.$route.query.altera)
+      this.carro = this.$route.query.altera;
     }
-  }
-}
+  },
+};
 </script>
 
 <style>
